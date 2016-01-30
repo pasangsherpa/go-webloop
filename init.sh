@@ -11,5 +11,4 @@ export DISPLAY=$DISPLAY
 /sbin/start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $XVFB -- $XVFBARGS
 sleep 1
 
-# Run app
 $APP

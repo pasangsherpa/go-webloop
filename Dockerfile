@@ -1,5 +1,5 @@
 FROM ubuntu
-MAINTAINER appcenter <pgsherpa12@gmail.com>
+MAINTAINER Pasang Sherpa <pgsherpa12@gmail.com>
 
 # Set environment vars
 ENV GO_VERSION go1.5
@@ -27,7 +27,7 @@ RUN apt-get update -y \
 	&& tar -zxvf ${GO_VERSION}.${EXTENSION} -C /usr/local \
 	&& rm ${GO_VERSION}.${EXTENSION} \
 	&& mkdir $HOME/go \
-	&& go get -u -tags gtk_3_10 github.com/sourcegraph/webloop/...
+	&& go get -u -tags gtk_3_10 github.com/pasangsherpa/webloop/...
 
 COPY ./init.sh /opt/init.sh
 RUN chmod +x /opt/init.sh
