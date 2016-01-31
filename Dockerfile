@@ -11,23 +11,23 @@ ENV APP app
 
 # Install go deps, xvfb (x session), libwebkit, gtk, and gotk3
 RUN apt-get update -y \
-	&& apt-get install --no-install-recommends -yq \
-		wget \
-		build-essential \
-		ca-certificates \
-		git \
-		mercurial \
-		bzr \
-		dbus \
-		xvfb \
-		libwebkit2gtk-3.0-dev \
-		libgtk-3-dev \
-		libcairo2-dev \
-	&& wget https://storage.googleapis.com/golang/${GO_VERSION}.${EXTENSION} -o /tmp/${GO_VERSION}.${EXTENSION} \
-	&& tar -zxvf ${GO_VERSION}.${EXTENSION} -C /usr/local \
-	&& rm ${GO_VERSION}.${EXTENSION} \
-	&& mkdir $HOME/go \
-	&& go get -u -tags gtk_3_10 github.com/pasangsherpa/webloop/...
+  && apt-get install --no-install-recommends -yq \
+  	wget \
+  	build-essential \
+  	ca-certificates \
+  	git \
+  	mercurial \
+  	bzr \
+  	dbus \
+  	xvfb \
+  	libwebkit2gtk-3.0-dev \
+  	libgtk-3-dev \
+  	libcairo2-dev \
+  && wget https://storage.googleapis.com/golang/${GO_VERSION}.${EXTENSION} -o /tmp/${GO_VERSION}.${EXTENSION} \
+  && tar -zxvf ${GO_VERSION}.${EXTENSION} -C /usr/local \
+  && rm ${GO_VERSION}.${EXTENSION} \
+  && mkdir $HOME/go \
+  && go get -u -tags gtk_3_10 github.com/pasangsherpa/webloop/...
 
 COPY ./init.sh /opt/init.sh
 RUN chmod +x /opt/init.sh
