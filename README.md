@@ -17,7 +17,7 @@ Docker image of Ubuntu 14.04 with WebKitGTK+, Golang, godep and webloop
 
 
 ### Usage
-	$ docker run -it --rm pasangsherpa/go-webloop bash
+	$ docker run -it --rm -e APP=[GO_APP_NAME]	pasangsherpa/go-webloop
 
 ### Delete all untagged images
 	$ docker rmi -f $(docker images | grep "<none>" | awk "{print \$3}")
