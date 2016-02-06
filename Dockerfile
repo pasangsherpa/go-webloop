@@ -22,9 +22,9 @@ ENV GOPATH /app/user
 ENV PATH $GOPATH/bin:$PATH
 
 COPY ./compile /app/.cache/gotools/bin/compile
-COPY ./init.sh /opt/init.sh
-RUN chmod +x /opt/init.sh
+COPY ./init /app/.cache/gotools/bin/init
+RUN chmod +x /app/.cache/gotools/bin/init
 
 ONBUILD COPY . /app/.temp
 ONBUILD RUN /app/.cache/gotools/bin/compile
-ONBUILD CMD ["/opt/init.sh"]
+ONBUILD RUN /app/.cache/gotools/bin/init
