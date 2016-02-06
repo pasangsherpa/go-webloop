@@ -5,7 +5,7 @@ RUN mkdir -p /app/.cache/gotools /app/.profile.d
 
 ENV GOPATH /app/.cache/gotools
 ENV PATH /app/user/bin:$GOPATH/bin:$PATH
-ENV DISPLAY :0.0
+ENV DISPLAY :1
 
 # Install xvfb (x session), libwebkit, gtk, and gotk3
 RUN apt-get update -y \
@@ -19,12 +19,14 @@ RUN apt-get update -y \
   && chmod a+x $GOPATH/bin/jq
 
 ENV GOPATH /app/user
+ENV APP app
 
 COPY ./compile /app/.cache/gotools/bin/compile
 RUN chmod a+x /app/.cache/gotools/bin/compile
+
 COPY ./init /app/.cache/gotools/bin/init
 RUN chmod a+x /app/.cache/gotools/bin/init
 
 ONBUILD COPY . /app/.temp
-ONBUILD RUN /app/.cache/gotools/bin/compile
-ONBUILD RUN /app/.cache/gotools/bin/init
+ONBUILD RUN compile
+ONBUILD CMD ["/bin/bash", "init"]
