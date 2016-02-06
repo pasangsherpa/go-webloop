@@ -1,16 +1,22 @@
-FROM heroku/go-gb:1.5
-MAINTAINER Pasang Sherpa <pgsherpa12@gmail.com>
+FROM heroku/go-base:latest
 
-# Install xvfb (x session), libwebkit, gtk, and gotk3
-RUN apt-get update -y \
-  && apt-get install --no-install-recommends -yq \
-    xvfb \
-    libwebkit2gtk-3.0-dev \
-    libgtk-3-dev \
-    libcairo2-dev \
-  && go get -u -tags gtk_3_10 github.com/pasangsherpa/webloop/...
+RUN mkdir -p /app/.cache/gotools /app/.profile.d
 
-COPY ./init.sh /opt/init.sh
-RUN chmod +x /opt/init.sh
+ENV GOPATH /app/.cache/gotools
+ENV PATH /app/user/bin:$GOPATH/bin:$PATH
+ENV GBVERSION 0.4.0
 
-CMD ["/opt/init.sh"]
+RUN mkdir -p $GOPATH/src/github.com/constabulary && \
+    cd $GOPATH/src/github.com/constabulary && \
+    curl -s "https://codeload.github.com/constabulary/gb/tar.gz/v$GBVERSION" | tar zxf - && \
+    mv gb-$GBVERSION gb && \
+    cd gb && \
+    go install -v ./... && \
+    cd $GOPATH && \
+    rm -rf src pkg
+
+COPY ./go-gb-docker.sh /app/.profile.d/go-gb-docker.sh
+
+ONBUILD COPY . /app/user
+ONBUILD RUN gb info && \
+            gb build
