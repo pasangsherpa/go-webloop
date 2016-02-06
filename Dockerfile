@@ -5,6 +5,7 @@ RUN mkdir -p /app/.cache/gotools /app/.profile.d
 
 ENV GOPATH /app/.cache/gotools
 ENV PATH /app/user/bin:$GOPATH/bin:$PATH
+ENV DISPLAY :0.0
 
 # Install xvfb (x session), libwebkit, gtk, and gotk3
 RUN apt-get update -y \
