@@ -15,8 +15,8 @@ RUN apt-get update -y \
     libgtk-3-dev \
     libcairo2-dev \
   && go get -v github.com/tools/godep \
-	&& curl -s --retry 3 -L https://github.com/stedolan/jq/releases/download/jq-1.4/jq-linux-x86_64 -o $GOPATH/bin/jq \
-	&& chmod a+x $GOPATH/bin/jq
+  && curl -s --retry 3 -L https://github.com/stedolan/jq/releases/download/jq-1.4/jq-linux-x86_64 -o $GOPATH/bin/jq \
+  && chmod a+x $GOPATH/bin/jq
 
 ENV GOPATH /app/user
 
