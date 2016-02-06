@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 DISPLAY=:0.0
@@ -11,10 +10,5 @@ echo "export DISPLAY=$DISPLAY" >> $HOME/.bashrc
 
 /sbin/start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $XVFB -- $XVFBARGS
 sleep 1
-
-echo "started xvfb"
-echo "DISPLAY=$DISPLAY"
-echo "APP=$APP"
-ps -ef | grep Xvfb
 
 $APP
