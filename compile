@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+warn() {
+  echo "!!! ---> $*"
+}
+
+export TMP=/app/.temp
+export GODEPS=$TMP/Godeps/Godeps.json
+
+if ! < $GODEPS jq -r . > /dev/null; then
+  warn "$GODEPS invalid!!"
+  exit 1
+fi
+
+name=$(< $GODEPS jq -r .ImportPath)
+goVerWanted=$(< $GODEPS jq -r .GoVersion)
+goVerHave=$(go version | cut -d \  -f 3)
+
+if [ "$goVerWanted" != "$goVerHave" ]; then
+  warn "Godeps/Godeps.json specifies: $goVerWanted"
+  warn "       Docker image supports: $goVerHave"
+  warn ""
+  warn "Update Godeps/Godeps.json or choose a different version tag"
+  warn ""
+  exit 1
+fi
+
+export TGT="$GOPATH/src/$name"
+mkdir -p $(dirname $TGT)
+mv $TMP $TGT
+
+cd $TGT
+FLAGS=(-tags heroku)
+
+echo "godep go install ${FLAGS[@]} ./..."
+godep go install "${FLAGS[@]}" ./...
+
+## End of the compile step, update profile.d if successful
+
+PROFILE=/app/.profile.d/go-docker.sh
+echo "PATH=$GOPATH/bin:\$PATH" > $PROFILE
+echo "echo" >> $PROFILE
+echo 'echo The Go Docker image places your code inside of a \$GOPATH' >> $PROFILE
+echo 'echo At compilation time \$GOPATH was:' $GOPATH >> $PROFILE
+echo "echo Your application\'s code is located in: $TGT" >> $PROFILE
+echo "echo Changing to that directory now." >> $PROFILE
+echo "echo" >> $PROFILE
+echo "cd $TGT" >> $PROFILE

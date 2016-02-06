@@ -1,39 +1,32 @@
-FROM ubuntu
+FROM heroku/go-base:1.5
 MAINTAINER Pasang Sherpa <pgsherpa12@gmail.com>
 
-# Set environment vars
-ENV GO_VERSION go1.5
-ENV EXTENSION linux-amd64.tar.gz
-ENV GOPATH /go
-ENV PATH $PATH:/usr/local/go/bin:$GOPATH/bin
-ENV GOSRC $GOPATH/src
-ENV APP app
+RUN mkdir -p /app/.cache/gotools /app/.profile.d
 
-# Install go deps, xvfb (x session), libwebkit, gtk, and gotk3
+ENV GOPATH /app/.cache/gotools
+ENV PATH /app/user/bin:$GOPATH/bin:$PATH
+ENV DISPLAY :1
+
+# Install xvfb (x session), libwebkit, gtk, and gotk3
 RUN apt-get update -y \
   && apt-get install --no-install-recommends -yq \
-    wget \
-    build-essential \
-    ca-certificates \
-    git \
-    mercurial \
-    bzr \
-    dbus \
     xvfb \
     libwebkit2gtk-3.0-dev \
     libgtk-3-dev \
     libcairo2-dev \
-  && wget https://storage.googleapis.com/golang/${GO_VERSION}.${EXTENSION} -o /tmp/${GO_VERSION}.${EXTENSION} \
-  && tar -zxvf ${GO_VERSION}.${EXTENSION} -C /usr/local \
-  && rm ${GO_VERSION}.${EXTENSION} \
-  && mkdir $HOME/go \
-  && go get -u -tags gtk_3_10 github.com/pasangsherpa/webloop/...
+  && go get -v github.com/tools/godep \
+  && curl -s --retry 3 -L https://github.com/stedolan/jq/releases/download/jq-1.4/jq-linux-x86_64 -o $GOPATH/bin/jq \
+  && chmod a+x $GOPATH/bin/jq
 
-COPY ./init.sh /opt/init.sh
-RUN chmod +x /opt/init.sh
+ENV GOPATH /app/user
+ENV APP app
 
-ONBUILD WORKDIR $GOSRC/$APP
-ONBUILD ADD . $GOSRC/$APP/
-ONBUILD RUN go get $APP
+COPY ./compile /app/.cache/gotools/bin/compile
+RUN chmod a+x /app/.cache/gotools/bin/compile
 
-ONBUILD CMD ["/opt/init.sh"]
+COPY ./init /app/.cache/gotools/bin/init
+RUN chmod a+x /app/.cache/gotools/bin/init
+
+ONBUILD COPY . /app/.temp
+ONBUILD RUN compile
+ONBUILD CMD ["/bin/bash", "init"]
