@@ -1,10 +1,10 @@
-FROM heroku/go-base:latest
+FROM heroku/go-base:1.5
 MAINTAINER Pasang Sherpa <pgsherpa12@gmail.com>
 
 RUN mkdir -p /app/.cache/gotools /app/.profile.d
 
 ENV GOPATH /app/.cache/gotools
-ENV PATH $GOPATH/bin:$PATH
+ENV PATH /app/user/bin:$GOPATH/bin:$PATH
 
 # Install xvfb (x session), libwebkit, gtk, and gotk3
 RUN apt-get update -y \
@@ -18,11 +18,11 @@ RUN apt-get update -y \
 	&& chmod a+x $GOPATH/bin/jq
 
 ENV GOPATH /app/user
-ENV PATH $GOPATH/bin:$PATH
 
 COPY ./compile /app/.cache/gotools/bin/compile
+RUN chmod a+x /app/.cache/gotools/bin/compile
 COPY ./init /app/.cache/gotools/bin/init
-RUN chmod +x /app/.cache/gotools/bin/init
+RUN chmod a+x /app/.cache/gotools/bin/init
 
 ONBUILD COPY . /app/.temp
 ONBUILD RUN /app/.cache/gotools/bin/compile
